@@ -3,106 +3,122 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>クレカ請求 やりくりチェッカー</title>
+  <title>やりくりチェッカー</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="app-header">
-    <h1>💳 クレカ請求 やりくりチェッカー</h1>
-    <p class="sub">給与の入金タイミングと請求の引き落とし日を突き合わせて「間に合うか」を判定します。</p>
-  </header>
+  <div class="app">
+    <header class="topbar">
+      <span class="logo">やりくりチェッカー</span>
+    </header>
 
-  <main>
-    <!-- STEP 1: 基準日 & 口座残高 -->
-    <section class="card">
-      <h2><span class="step">1</span> 口座残高・基準日</h2>
-      <div class="grid2">
-        <label>
-          基準日（この日時点で考える）
-          <input type="date" id="baseDate" />
-        </label>
-        <label>
-          現在の口座残高（円）
-          <input type="number" id="balance" inputmode="numeric" placeholder="例: 50000" />
-        </label>
-      </div>
-      <p class="hint">残高は自動で記憶され、次回ひらいた時に復元されます。</p>
-    </section>
+    <!-- 進捗 -->
+    <nav class="steps" id="steps" aria-label="ステップ">
+      <button class="step" data-go="0"><i></i><span>残高</span></button>
+      <button class="step" data-go="1"><i></i><span>給与</span></button>
+      <button class="step" data-go="2"><i></i><span>請求</span></button>
+      <button class="step" data-go="3"><i></i><span>結果</span></button>
+    </nav>
 
-    <!-- STEP 2: 給与 -->
-    <section class="card">
-      <h2><span class="step">2</span> 給与の入力</h2>
-      <div class="grid2">
-        <label>
-          家庭教師（末日に入金）
-          <div class="inline">
-            <input type="number" id="tutor" inputmode="numeric" placeholder="例: 16600" />
-            <select id="tutorHistory" title="過去の金額から選ぶ">
-              <option value="">履歴…</option>
-            </select>
-          </div>
-          <span class="hint">入力した金額は履歴に残り、あとで選べます。</span>
-        </label>
-        <label>
-          ハンバーグ屋バイト（変動・記憶しません）
-          <input type="number" id="hamburg" inputmode="numeric" placeholder="例: 80000" />
-          <span class="hint">毎月変わる前提なので履歴は持ちません。</span>
-        </label>
-      </div>
+    <div class="stage" id="stage">
 
-      <details class="advanced">
-        <summary>入金日の詳細設定</summary>
-        <div class="grid2">
-          <label>
-            ハンバーグ屋の給料日（毎月）
-            <select id="hamburgPayday"></select>
+      <!-- STEP 0 -->
+      <section class="screen" data-screen="0">
+        <div class="screen-body">
+          <h1>口座残高</h1>
+          <p class="lead">いまの残高と、計算の基準にする日を入力します。</p>
+
+          <label class="f">
+            <span class="f-label">現在の口座残高</span>
+            <div class="money"><em>¥</em><input type="number" id="balance" inputmode="numeric" placeholder="0" /></div>
           </label>
-          <label>
-            家庭教師の給料日
-            <select id="tutorPayday">
-              <option value="last">末日</option>
-            </select>
+
+          <label class="f">
+            <span class="f-label">基準日</span>
+            <input type="date" id="baseDate" />
           </label>
+
+          <p class="note">残高はこの端末に記憶され、次回ひらくと復元されます。</p>
         </div>
-        <p class="hint">給料日が土日祝の場合は「前の平日」に前倒しで入金される想定です。</p>
-      </details>
-    </section>
+        <footer class="nav">
+          <span></span>
+          <button class="btn primary" data-next>次へ</button>
+        </footer>
+      </section>
 
-    <!-- STEP 3: クレカ請求 -->
-    <section class="card">
-      <h2><span class="step">3</span> クレカ請求額（発行会社別）</h2>
-      <p class="hint">「請求額」と、そのうちの「交通費（モバイルSuicaチャージ等）」を入力します。交通費は経費計上用に別集計します。</p>
-      <div id="cardList"></div>
-    </section>
+      <!-- STEP 1 -->
+      <section class="screen" data-screen="1">
+        <div class="screen-body">
+          <h1>給与</h1>
+          <p class="lead">家庭教師は末日入金。ハンバーグ屋は毎月変動する想定です。</p>
 
-    <div class="actions">
-      <button id="calcBtn" class="primary">計算する</button>
-      <button id="resetBtn" class="ghost">入力をクリア</button>
+          <label class="f">
+            <span class="f-label">家庭教師<small>末日に入金</small></span>
+            <div class="money"><em>¥</em><input type="number" id="tutor" inputmode="numeric" placeholder="0" /></div>
+            <div class="chips" id="tutorChips"></div>
+          </label>
+
+          <label class="f">
+            <span class="f-label">ハンバーグ屋<small>変動・記憶しません</small></span>
+            <div class="money"><em>¥</em><input type="number" id="hamburg" inputmode="numeric" placeholder="0" /></div>
+          </label>
+
+          <details class="adv">
+            <summary>入金日の詳細設定</summary>
+            <div class="adv-body">
+              <label class="f">
+                <span class="f-label">ハンバーグ屋の給料日</span>
+                <select id="hamburgPayday"></select>
+              </label>
+              <p class="note">給料日が土日祝なら前の平日に前倒し、引き落としが土日祝なら翌営業日に繰り下げて計算します。</p>
+            </div>
+          </details>
+        </div>
+        <footer class="nav">
+          <button class="btn ghost" data-back>戻る</button>
+          <button class="btn primary" data-next>次へ</button>
+        </footer>
+      </section>
+
+      <!-- STEP 2 -->
+      <section class="screen" data-screen="2">
+        <div class="screen-body">
+          <h1>クレカ請求</h1>
+          <p class="lead">請求額と、そのうちの交通費（Suica等）を入力します。交通費は経費用に別集計します。</p>
+          <div id="cardList" class="cardlist"></div>
+        </div>
+        <footer class="nav">
+          <button class="btn ghost" data-back>戻る</button>
+          <button class="btn primary" id="calcBtn">計算する</button>
+        </footer>
+      </section>
+
+      <!-- STEP 3 -->
+      <section class="screen" data-screen="3">
+        <div class="screen-body">
+          <h1>結果</h1>
+          <div id="verdict" class="verdict"></div>
+          <div id="summary" class="summary"></div>
+
+          <h2 class="sec-title">カレンダー</h2>
+          <p class="note legend-row">
+            <span class="legend out">引落</span>
+            <span class="legend in">入金</span>
+            日付をタップすると内訳が出ます。
+          </p>
+          <div id="calendar" class="calendar"></div>
+          <div id="dayDetail" class="day-detail" hidden></div>
+        </div>
+        <footer class="nav">
+          <button class="btn ghost" data-back>戻る</button>
+          <button class="btn ghost" id="resetBtn">クリア</button>
+        </footer>
+      </section>
+
     </div>
 
-    <!-- RESULT -->
-    <section class="card" id="resultCard" hidden>
-      <h2>📊 判定結果</h2>
-      <div id="verdict"></div>
-      <div id="summary" class="summary"></div>
-    </section>
-
-    <!-- CALENDAR -->
-    <section class="card" id="calendarCard" hidden>
-      <h2>🗓 支払いカレンダー</h2>
-      <p class="hint">
-        <span class="legend in">入金</span>
-        <span class="legend out">引き落とし</span>
-        <span class="legend warn">残高マイナス</span>
-        日付は土日祝の繰り（引き落とし＝翌営業日／給与＝前営業日）を反映済みです。
-      </p>
-      <div id="calendar"></div>
-    </section>
-  </main>
-
-  <footer>
-    <p>データはこのブラウザ内（localStorage）にのみ保存されます。サーバーには送信されません。</p>
-  </footer>
+    <footer class="foot">データはこの端末内にのみ保存され、外部送信はありません。</footer>
+  </div>
 
   <script src="holidays.js"></script>
   <script src="app.js"></script>
