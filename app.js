@@ -55,7 +55,7 @@ function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 
 let state = loadState();
 state.tutorHistory = state.tutorHistory || [];
-state.cards = state.cards || {};
+state.cards = {}; // 請求額はセッション内のみ（保存しない＝古い請求が残る事故を防ぐ）
 let lastSim = null;
 
 /* ===== DOM 構築 ===== */
@@ -145,7 +145,6 @@ function persist(input) {
   state.baseDate = input.baseDate;
   state.balance = input.balance;
   state.hamburgPayday = input.hamburgPayday;
-  state.cards = input.cards;
   state.lastTutor = input.tutor;
   if (input.tutor > 0 && !state.tutorHistory.includes(input.tutor)) state.tutorHistory.push(input.tutor);
   saveState();
@@ -350,6 +349,12 @@ function bind() {
 
   $("sheetClose").addEventListener("click", closeSheet);
   $("sheetBg").addEventListener("click", closeSheet);
+
+  $("wipeBtn").addEventListener("click", () => {
+    if (!confirm("残高・給与履歴を含む保存データをすべて消去して最初からやり直します。よろしいですか？")) return;
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  });
 
   $("resetBtn").addEventListener("click", () => {
     if (!confirm("請求額・給与の入力をクリアします（残高と履歴は残します）。")) return;

@@ -208,4 +208,6 @@ b.neg { color: var(--out); }
 .dd-bal .neg { color: var(--out); }
 .sheet .close { margin-top: 16px; width: 100%; }
 
-.foot { text-align: center; color: var(--muted); font-size: .72rem; padding: 16px; border-top: 1px solid var(--line); }
+.foot { text-align: center; color: var(--muted); font-size: .72rem; padding: 16px; border-top: 1px solid var(--line); line-height: 1.9; }
+.linkbtn { background: none; border: 0; color: var(--out); font: inherit; font-size: .72rem; cursor: pointer; text-decoration: underline; padding: 0; }
+.ver { display: inline-block; margin-left: 8px; opacity: .6; }

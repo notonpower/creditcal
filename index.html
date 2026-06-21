@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <title>やりくりチェッカー</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=5" />
 </head>
 <body>
   <div class="app">
@@ -116,7 +117,11 @@
 
     </div>
 
-    <footer class="foot">データはこの端末内にのみ保存され、外部送信はありません。</footer>
+    <footer class="foot">
+      データはこの端末内にのみ保存され、外部送信はありません。<br>
+      <button class="linkbtn" id="wipeBtn">保存データを全消去</button>
+      <span class="ver">v5</span>
+    </footer>
   </div>
 
   <div class="sheet-bg" id="sheetBg" hidden></div>
@@ -126,7 +131,7 @@
     <button class="btn ghost close" id="sheetClose">閉じる</button>
   </div>
 
-  <script src="holidays.js"></script>
-  <script src="app.js"></script>
+  <script src="holidays.js?v=5"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>
