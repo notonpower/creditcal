@@ -107,7 +107,6 @@
             日付をタップすると内訳が出ます。
           </p>
           <div id="calendar" class="calendar"></div>
-          <div id="dayDetail" class="day-detail" hidden></div>
         </div>
         <footer class="nav">
           <button class="btn ghost" data-back>戻る</button>
@@ -118,6 +117,13 @@
     </div>
 
     <footer class="foot">データはこの端末内にのみ保存され、外部送信はありません。</footer>
+  </div>
+
+  <div class="sheet-bg" id="sheetBg" hidden></div>
+  <div class="sheet" id="daySheet" hidden>
+    <div class="grip"></div>
+    <div id="sheetBody"></div>
+    <button class="btn ghost close" id="sheetClose">閉じる</button>
   </div>
 
   <script src="holidays.js"></script>

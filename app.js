@@ -223,7 +223,7 @@ function renderResult(sim) {
 function renderCalendar(sim) {
   const wrap = $("calendar");
   wrap.innerHTML = "";
-  $("dayDetail").hidden = true;
+  closeSheet();
 
   const byDay = {};
   sim.events.forEach((e) => (byDay[ymd(e.date)] = byDay[ymd(e.date)] || []).push(e));
@@ -286,16 +286,27 @@ function renderMonth(year, mi, byDay, base) {
 function selectDay(cell, date, evs) {
   document.querySelectorAll(".cell.sel").forEach((c) => c.classList.remove("sel"));
   cell.classList.add("sel");
-  const det = $("dayDetail");
   const rows = evs.map((e) => {
     const cls = e.type === "out" ? "out" : "in";
     const sign = e.type === "out" ? "−" : "+";
     return `<div class="dd-row"><span>${e.label}</span><span class="amt ${cls}">${sign}${yen(e.amount)}</span></div>`;
   }).join("");
   const bal = evs[evs.length - 1].balanceAfter;
-  det.innerHTML = `<h3>${fmtJp(date)}</h3>${rows}
+  $("sheetBody").innerHTML = `<h3>${fmtJp(date)}</h3>${rows}
     <div class="dd-bal"><span>引き落とし後の残高</span><span class="${bal < 0 ? "neg" : ""}">${yen(bal)}</span></div>`;
-  det.hidden = false;
+  openSheet();
+}
+
+function openSheet() {
+  const bg = $("sheetBg"), sh = $("daySheet");
+  bg.hidden = false; sh.hidden = false;
+  requestAnimationFrame(() => { bg.classList.add("show"); sh.classList.add("show"); });
+}
+function closeSheet() {
+  const bg = $("sheetBg"), sh = $("daySheet");
+  bg.classList.remove("show"); sh.classList.remove("show");
+  document.querySelectorAll(".cell.sel").forEach((c) => c.classList.remove("sel"));
+  setTimeout(() => { bg.hidden = true; sh.hidden = true; }, 300);
 }
 
 /* ===== 画面遷移 ===== */
@@ -336,6 +347,9 @@ function bind() {
   $("balance").addEventListener("change", () => { state.balance = parseFloat($("balance").value) || 0; saveState(); });
   $("baseDate").addEventListener("change", () => { state.baseDate = $("baseDate").value; saveState(); });
   $("hamburgPayday").addEventListener("change", () => { state.hamburgPayday = $("hamburgPayday").value; saveState(); });
+
+  $("sheetClose").addEventListener("click", closeSheet);
+  $("sheetBg").addEventListener("click", closeSheet);
 
   $("resetBtn").addEventListener("click", () => {
     if (!confirm("請求額・給与の入力をクリアします（残高と履歴は残します）。")) return;
